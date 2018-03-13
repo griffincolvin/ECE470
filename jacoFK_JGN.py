@@ -45,28 +45,28 @@ def ForwardKinematics(thetas):
     q6 = np.array([0, y_arm4_to_arm5, q5[2] + z_arm4_to_arm5])
 
 
-    temp1 = np.matmul(brack3by3(w1).dot(-1),q1)
-    S1 = np.concatenate( (w1, temp1), axis = 0)
+    v1 = np.matmul(brack3by3(w1).dot(-1),q1)
+    S1 = np.concatenate( (w1, v1), axis = 0)
     expm1 = expm(brack4by4(S1)*(thetas[0]*np.pi/180))
 
-    temp2 = np.matmul(brack3by3(w2).dot(-1),q2)
-    S2 = np.concatenate( (w2, temp2), axis = 0)
+    v2 = np.matmul(brack3by3(w2).dot(-1),q2)
+    S2 = np.concatenate( (w2, v2), axis = 0)
     expm2 = expm(brack4by4(S2)*(thetas[1]*np.pi/180))
 
-    temp3 = np.matmul(brack3by3(w3).dot(-1),q3)
-    S3 = np.concatenate( (w3, temp3), axis = 0)
+    v3 = np.matmul(brack3by3(w3).dot(-1),q3)
+    S3 = np.concatenate( (w3, v3), axis = 0)
     expm3 = expm(brack4by4(S3)*(thetas[2]*np.pi/180))
 
-    temp4 = np.matmul(brack3by3(w4).dot(-1),q4)
-    S4 = np.concatenate( (w4, temp4), axis = 0)
+    v4 = np.matmul(brack3by3(w4).dot(-1),q4)
+    S4 = np.concatenate( (w4, v4), axis = 0)
     expm4 = expm(brack4by4(S4)*(thetas[3]*np.pi/180))
 
-    temp5 = np.matmul(brack3by3(w5).dot(-1),q5)
-    S5 = np.concatenate( (w5, temp5), axis = 0)
+    v5 = np.matmul(brack3by3(w5).dot(-1),q5)
+    S5 = np.concatenate( (w5, v5), axis = 0)
     expm5 = expm(brack4by4(S5)*(thetas[4]*np.pi/180))
 
-    temp6 = np.matmul(brack3by3(w6).dot(-1),q6)
-    S6 = np.concatenate( (w6, temp6), axis = 0)
+    v6 = np.matmul(brack3by3(w6).dot(-1),q6)
+    S6 = np.concatenate( (w6, v6), axis = 0)
     expm6 = expm(brack4by4(S6)*(thetas[5]*np.pi/180))
 
     T = expm1 @ expm2 @ expm3 @ expm4 @ expm5 @ expm6 @ M
