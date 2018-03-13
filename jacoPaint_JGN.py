@@ -34,6 +34,7 @@ res,theta5 = vrep.simxGetJointPosition(clientID, jointHands5, vrep.simx_opmode_b
 res,theta6 = vrep.simxGetJointPosition(clientID, jointHands6, vrep.simx_opmode_blocking)
 
 # Set the desired value of the first joint variable
+if False: '''
 vrep.simxSetJointTargetPosition(clientID, jointHands1, theta1 +(np.pi), vrep.simx_opmode_oneshot)
 vrep.simxSetJointTargetPosition(clientID, jointHands2, theta2 +(np.pi/4), vrep.simx_opmode_oneshot)
 vrep.simxSetJointTargetPosition(clientID, jointHands3, theta3 +(np.pi/4), vrep.simx_opmode_oneshot)
@@ -54,7 +55,14 @@ vrep.simxSetJointTargetPosition(clientID, jointHands4, theta4 +(np.pi/2), vrep.s
 vrep.simxSetJointTargetPosition(clientID, jointHands5, theta5 -(np.pi/2), vrep.simx_opmode_oneshot)
 vrep.simxSetJointTargetPosition(clientID, jointHands6, theta6 +(2*np.pi), vrep.simx_opmode_oneshot)
 time.sleep(6)
-
+'''
+vrep.simxSetJointTargetPosition(clientID, jointHands1, 1*theta1 + 1*(np.pi/3), vrep.simx_opmode_oneshot)
+vrep.simxSetJointTargetPosition(clientID, jointHands2, 1*theta2 + 1*(np.pi/3), vrep.simx_opmode_oneshot)
+vrep.simxSetJointTargetPosition(clientID, jointHands3, 1*theta3 + 1*(np.pi/3), vrep.simx_opmode_oneshot)
+vrep.simxSetJointTargetPosition(clientID, jointHands4, 1*theta4 + 1*(np.pi/3), vrep.simx_opmode_oneshot)
+vrep.simxSetJointTargetPosition(clientID, jointHands5, 1*theta5 + 1*(np.pi) + 1*(np.pi/3), vrep.simx_opmode_oneshot)
+vrep.simxSetJointTargetPosition(clientID, jointHands6, 1*theta6 + 0*(np.pi/6), vrep.simx_opmode_oneshot)
+time.sleep(30)
 # Stop simulation
 vrep.simxStopSimulation(clientID, vrep.simx_opmode_oneshot)
 
