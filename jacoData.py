@@ -1,11 +1,11 @@
 import numpy as np
 from numpy.linalg import *
-from vrepHelpers import *
+# from vrepHelpers import *
 from mathHelpers import *
 from scipy.linalg import expm, sinm, cosm
 
 def JacoScrewMatrix():
-	zo= +8.2370e-02
+    zo= 8.2370 * (10**-2)
     yo=0
     xo=0
     j1 = np.array([(-3.2712e-05),(-1.7324e-05),(+1.6075e-01-zo)])
@@ -49,9 +49,9 @@ def JacoScrewMatrix():
     return [S1, S2, S3, S4, S5, S6]
 
 def getJacoZeroPose():
-	zo= +8.2370e-02
+    zo= +8.2370e-02
     j6 = np.array([(-3.2792e-05),(+1.1769e-01),(+9.7239e-01-zo)])
-	R =  eul2rot(np.array([70, 0, 0]))
+    R =  eul2rot(np.array([70, 0, 0]))
     p = np.reshape(j6,(3,1))
     temp0 = np.concatenate((R, p), axis = 1)
     return np.concatenate((temp0 , np.array([[0, 0, 0, 1]])), axis = 0)
