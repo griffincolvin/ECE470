@@ -13,13 +13,18 @@
     1e. Refining script based on the simulation
     1f. References
 
-### __2. Determining and applying forward kinematics using V-REP__
+### __2. Applying forward kinematics using V-REP__
 
     2a. Determining physical parameters
-    2b.
-    2c.
-    2d.
-    2e.
+    2b. Initializing coordinate transformation matrix
+    2c. Intitializing screw axes
+    2d. Calculating homogeneous transformation matrix
+    2e. Implentating forward kinematic function
+
+### __3. Applying inverse kinematics using V-REP__
+
+    3a. Determining DH parameters
+    3b.
 ---
 
 ## Starting off using V-REP with Python API
@@ -102,6 +107,12 @@ __Kinova Robotics :__
 
 ---
 
-## Determining and applying forward kinematics using V-REP
+## Applying forward kinematics using V-REP
 
 ### __2a. Determining physical parameters__
+
+---
+
+## Applying inverse kinematics using V-REP
+
+### __3a. Determining DH parameters__
