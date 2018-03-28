@@ -70,9 +70,9 @@ plt.show()
 plt.close()
 
 #XYZ locations of the corner
-origin = np.atleast_2d([1,1,1]).transpose()
-xend =   np.atleast_2d([2,2,1]).transpose()
-yend =   np.atleast_2d([1,1,2]).transpose()
+origin = np.atleast_2d([.1,.1,.1]).transpose()
+xend =   np.atleast_2d([.2,.2,.1]).transpose()
+yend =   np.atleast_2d([.1,.1,.2]).transpose()
 
 xvec = xend - origin;
 yvec = yend - origin;
@@ -88,6 +88,8 @@ for l in pts:
     y = l[1,:]
     z = l[2,:]
     ax.plot(x,y,z)
+    
+plt.show()
 
 plane_norm = -np.cross(xvec.T, yvec.T).T
 plane_norm = plane_norm/np.linalg.norm(plane_norm)
