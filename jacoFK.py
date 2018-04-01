@@ -5,7 +5,7 @@ from vrepHelpers import *
 from mathHelpers import *
 from jacoFK_JGN import fKin
 
-# fuck u 
+
 # Close all open connections (just in case)
 vrep.simxFinish(-1)
 # Connect to V-REP (raise exception on failure)
