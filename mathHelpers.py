@@ -150,54 +150,6 @@ def printPos(posvec,oldornew) :
 
     return print(" " + oldornew + " Position \n" + oldornew + " x value: " + str(posvec[0]) + "\n" + oldornew + " y value: " + str(posvec[1])+ "\n" + oldornew + " z value: " + str(posvec[2]))
 
-
-def bracket(v):
-    """
-    Returns the 'bracket' operator of a 3x1 vector or 6x1 twist
-    :param v: the 3x1 vector or 6x1 twist, can be of type list or numpy.ndarray - Must be convertible to a numpy array!
-    :returns: a 3x3 or 4x4 numpy array based on the input matrix or an empty list otherwise
-    """
-    v = np.asarray(v)
-    rtn = []
-    if(v.shape == (6,1)):
-        rtn = np.block([[ bracket(v[:3]),  v[3:]   ],
-                        [ np.zeros((1,4))          ]])
-    elif(v.shape == (3,1)):
-        rtn = np.zeros((3,3))
-        rtn[0][1] = - v[2]
-        rtn[0][2] =   v[1]
-        rtn[1][2] = - v[0]
-        rtn = rtn - rtn.transpose()
-    return rtn
-
-def inv_bracket(m):
-    """
-    Performs the inverse 'bracket' operation on a 3x3 or 4x4 matrix
-    :param m: the 3x3 skew-symmetric matrix or 4x4 bracket of a twist - Must be convertible to a numpy array!
-    :returns: the vector or twist representation of the input matrix or an empty list otherwise
-    """
-    rtn = []
-    m = np.asarray(m)
-    if(m.shape == (4,4)):
-        rtn = np.block([[ inv_bracket(m[:3,:3])],
-                        [ m[:3,3:]             ]])
-    elif(m.shape == (3,3)):
-        m = m - m.transpose()
-        rtn = np.zeros((3,1))
-        rtn[2] = - m[0][1]/2
-        rtn[1] =   m[0][2]/2
-        rtn[0] = - m[1][2]/2
-    return rtn
-
-def adj_T(T):
-    """
-    Returns the adjoint transformation matrix of T
-    :param T: the pose whose 6x6 adjoint matrix to return
-    """
-    rot, pos = fromPose(T)
-    return np.block([[ rot,                   np.zeros((3,3)) ],
-                     [ bracket(pos).dot(rot), rot             ]])
-
 def toPose(rot, pos):
     """
     Returns a 4x4 HCT matrix given by the 3x3 rotation matrix and 3x1 postion vector

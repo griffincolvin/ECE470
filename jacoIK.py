@@ -8,17 +8,6 @@ from vrepHelpers import *
 from mathHelpers import *
 
 
-def toPose(rot, pos):
-    """
-    Returns a 4x4 HCT matrix given by the 3x3 rotation matrix and 3x1 postion vector
-    :param rot: A 3x3 Rotation Matrix
-    :param pos: A 3x1 Position Vector
-    :returns: A 4x4 HTC matrix as a numpy array
-    """
-    return np.block([[ rot, pos  ],
-                     [ 0,0,0,1  ]])
-
-
 class Cursor(object):
     def __init__(self, ax):
         self.ax = ax
@@ -115,18 +104,6 @@ for line in poses:
 
 print(temp)
 
-print('First move is:' + str(temp[1]))
-
-goalT = jk.jaco_FK(temp[1])
-
-print('First pose is:' + str(goalT))
-
-goalThetas = temp[1]
-
-print('First set of angles are:' + str(goalThetas))
-
-
-
 # Close all open connections (just in case)
 vrep.simxFinish(-1)
 # Connect to V-REP (raise exception on failure)
@@ -140,6 +117,7 @@ res,jacoFrame = vrep.simxGetObjectHandle(clientID, "Jaco",vrep.simx_opmode_block
 
 # Start simulation
 vrep.simxStartSimulation(clientID, vrep.simx_opmode_oneshot)
+
 
 for config in temp:
 
@@ -158,14 +136,12 @@ for config in temp:
     for i in range(0, 6):
         setJoiTargPos(clientID,jointHands[i],config[i] + joiPos_o[i])
         print("Joint " + str(i+1) + " Moved by " + str(rad2deg(config[i])) + " Degrees")
+        time.sleep(0.5)
     
 
-# print('Finished motions. Sleeping for 5sec')
-# res,newori = vrep.simxGetObjectOrientation(clientID,jointHands[5],jacoFrame,vrep.simx_opmode_blocking)
-# printEuls(newori,'new')
-# res,newpos = vrep.simxGetObjectPosition(clientID,jointHands[5],jacoFrame,vrep.simx_opmode_blocking)
-# printPos(newpos,'new')
-# time.sleep(15)
+print('Finished motions. Sleeping for 15sec')
+
+time.sleep(15)
 
 # Stop simulation
 vrep.simxStopSimulation(clientID, vrep.simx_opmode_oneshot)
