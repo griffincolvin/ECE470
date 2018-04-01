@@ -1,5 +1,6 @@
 import vrep
-import numpy as np 
+import numpy as np
+import mathHelpers as mh
 
 def getJoiHands (clientID,robotname) :
     res,jh1 = vrep.simxGetObjectHandle(clientID,robotname + '_joint1',vrep.simx_opmode_blocking)
@@ -13,15 +14,29 @@ def getJoiHands (clientID,robotname) :
     return jointHands
 
 def setObjPos (clientID,objHand,refHand,pos) :
-    
-    return vrep.simxSetObjectPosition(clientID,objHand,refHand,pos,vrep.simx_opmode_blocking)
+    vrep.simxSetObjectPosition(clientID,objHand,refHand,pos,vrep.simx_opmode_blocking)
+
+    return
+
+def setObjOrient (clientID, objHand, refHand, euls) :
+    vrep.simxSetObjectOrientation(clientID, objHand, refHand, euls, vrep.simx_opmode_blocking)
+
+    return
 
 def setJoiTargPos (clientID,joiHand,targPos) :
+    vrep.simxSetJointTargetPosition(clientID,joiHand,targPos,vrep.simx_opmode_blocking)
 
-    return vrep.simxSetJointTargetPosition(clientID,joiHand,targPos,vrep.simx_opmode_blocking)
+    return
 
 def getJoiPos (clientID, joiHand) :
     res,joiPos = vrep.simxGetJointPosition(clientID, joiHand, vrep.simx_opmode_blocking)
+
     return joiPos
 
+def setObjPose (clientID, objHand, refHand, goalPose) :
+    goalRot,goalPos = mh.fromPose(goalPose)
+    goalEuls = mh.rot2eul(goalRot)
+    setObjPos(clientID,objHand,refHand,goalPos)
+    setObjOrient(clientID,objHand,refHand,goalEuls)
 
+    return
