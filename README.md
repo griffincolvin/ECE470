@@ -115,4 +115,20 @@ __Kinova Robotics :__
 
 ## Applying inverse kinematics using V-REP
 
-### __3a. Determining DH parameters__
+### Code Setup
+
+In order to demonstrate inverse kinematics functionaltiy, an method of providing an input pose and solving for the joint variables needed to achieve that pose must be created. For our project, we chose to have the user draw an arbitrary shape on and have the robot draw the same shape on a screen in the V-REP simulated evironment. The code that obtains the user-input and solves the joint-variables is located in the 'jacoIK.py' file.
+
+For the user input portion of the code, an empty, interactive, matplotlib frame is displayed. The user can use the cursor to draw an arbitary shape, recoreded as a sequence of lines, on the display. Once the user exits the menu, the points are transformed in space onto the known location of the screen in V-REP. From the point locations, poses are generated that point the drawing tool normal to the screen. Then for the starting point, a numerical inverse-kinematic function is used to generate the joint variables to achieve the given pose. 
+
+The inverse kinematics function used was a numerical newton-raphson method to find a robot joint-variables to get arbitrarily close to the given pose. By starting at a given pose with a given set of joint variables, the robot jacobian is found and used to determine the direction each joint needs to move to get closer to the given pose. This is essentially the forward kinematics of the robot. Once the error is small enough, the joint variables are simply returned. Should the pose be unreachable, the algorithm will not converge and a indication is returned after a set maximum number of iterations.
+
+If multiple poses that are nearby need to be generated, the alogirthm can be initialized with a joint-variables that produce a nearby pose. This provides faster convergence as the robot response to small changes to joint varaibles produce a nearly linear response.
+
+### V-REP Setup
+
+For the demo, a Jaco robot with a ?marker/felt-tip pen tool and a screen are used. The robot is placed at a known location and orientation so that its position relative to the screen can be measured. By finding the coordinates of the bottom-left of the screen as the origin and the bottom-right and top-left as the end of the x and y 'axes', the user input drawing can be easily transformed into a set of points that lie on the screen.
+
+Once the joint angles from the previous code are known, the forward-kinematics of the robot are used to drive the robot to each location in the correct sequence to draw the input onto the screen in V-REP.
+
+As the user has complete freedom over a large and varied input space, the program demonstrates true inverse kinematics functionality as the user input can accurately be converted into robot motion.
