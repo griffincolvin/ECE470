@@ -67,6 +67,11 @@ plt.close()
 origin = np.atleast_2d([.1,.1,.1]).transpose()
 xend =   np.atleast_2d([.2,.2,.1]).transpose()
 yend =   np.atleast_2d([.1,.1,.2]).transpose()
+# Shouldn't it be somewhere like this? if the wall is placed at the
+# current location in the .ttt file in the repo
+# origin = np.atleast_2d([.5,1,0]).transpose()
+# xend =   np.atleast_2d([.5,-1,0]).transpose()
+# yend =   np.atleast_2d([.5,1,1.2]).transpose()
 
 xvec = xend - origin;
 yvec = yend - origin;
@@ -98,8 +103,10 @@ joint_vars = []
 for line in poses:
     temp = []
     for pose in line:
+        # print('now pose is: ' + str(pose))    
         theta = jk.jaco_IK(pose, theta)
         temp.append(theta)
+        # print('now theta is: ' + str(theta))
     joint_vars.append(temp)
 
 print(temp)
@@ -110,20 +117,21 @@ vrep.simxFinish(-1)
 clientID = vrep.simxStart('127.0.0.1', 19997, True, True, 5000, 5)
 if clientID == -1:
     raise Exception('Failed connecting to remote API server')
+# Start simulation
+vrep.simxStartSimulation(clientID, vrep.simx_opmode_oneshot)
 
 res,goalFrame = vrep.simxGetObjectHandle(clientID, 'goalFrame', vrep.simx_opmode_blocking)
 jointHands = getJoiHands(clientID,'Jaco')
 res,jacoFrame = vrep.simxGetObjectHandle(clientID, "Jaco",vrep.simx_opmode_blocking)
 
-# Start simulation
-vrep.simxStartSimulation(clientID, vrep.simx_opmode_oneshot)
+
 
 
 for config in temp:
-
-    goalT = jk.jaco_FK(config)
-    # Set goal frame dummy to estimated location
-    setObjPose(clientID, goalFrame, jacoFrame, goalT)
+    # Check IK with dummy frame position
+    # goalT = jk.jaco_FK(config)
+    # # Set goal frame dummy to estimated location
+    # setObjPose(clientID, goalFrame, jacoFrame, goalT)
     # Move arm to estimated location
     joi1_o = getJoiPos(clientID,jointHands[0])
     joi2_o = getJoiPos(clientID,jointHands[1])
@@ -139,9 +147,9 @@ for config in temp:
         time.sleep(0.5)
     
 
-print('Finished motions. Sleeping for 15sec')
+print('Finished motions. Sleeping for 5sec')
 
-time.sleep(15)
+time.sleep(5)
 
 # Stop simulation
 vrep.simxStopSimulation(clientID, vrep.simx_opmode_oneshot)

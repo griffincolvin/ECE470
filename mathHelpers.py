@@ -263,10 +263,18 @@ def findIK(endT, S, M, theta=None, max_iter=100, max_err = 0.001, mu=0.05):
     V = np.ones((6,1))
     while np.linalg.norm(V) > max_err and max_iter > 0:
         curr_pose = evalT(S, theta, M)
-        V = inv_bracket(logm(endT.dot(inv(curr_pose))))
+        V = inv_bracket(logm(endT.dot(inv(curr_pose))))  
         J = evalJ(S, theta)
         pinv = inv(J.transpose().dot(J) + mu*np.identity(len(S))).dot(J.transpose())
         thetadot = pinv.dot(V)
+        #thetadot = np.linalg.pinv(J,mu).dot(V)
         theta = theta + thetadot
-        max_iter -= 1;
+        max_iter -= 1
+
+        # If you wanna debug things
+        # print('V twist: ' + str(V))
+        # print('Iterations:' + str(max_iter))
+        # print('Theta: '+ str(theta))
+        # print('Err: ' + str(np.linalg.norm(V)))
+    
     return (theta, np.linalg.norm(V))
