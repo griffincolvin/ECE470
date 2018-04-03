@@ -10,11 +10,11 @@ __jaco_zero_M = getJacoZeroPose()
 
 
 def jaco_FK(thetas):
-	thetas = np.reshape(thetas, (6,1)) 
+    thetas = np.reshape(thetas, (6,1)) 
     return evalT(__jaco_screw, thetas, __jaco_zero_M)
 
 def jaco_IK(endPose, theta_init = None):
-	endPose = np.reshape(endPose, (4,4)) 
+    endPose = np.reshape(endPose, (4,4)) 
     theta, err = findIK(endPose, __jaco_screw, __jaco_zero_M, theta=theta_init, max_err = 0.01)
     if err > 0.01:
         theta, err = findIK(endPose, __jaco_screw, __jaco_zero_M, theta=theta_init, max_iter=5000, max_err = 0.01)

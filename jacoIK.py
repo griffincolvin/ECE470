@@ -2,9 +2,9 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import numpy as np
 import jacoKinematics as jk
-import vrep
+# import vrep
 import time
-from vrepHelpers import *
+# from vrepHelpers import *
 from mathHelpers import *
 
 
@@ -103,57 +103,57 @@ joint_vars = []
 for line in poses:
     temp = []
     for pose in line:
-        # print('now pose is: ' + str(pose))    
+        print('now pose is: ' + str(pose))    
         theta = jk.jaco_IK(pose, theta)
         temp.append(theta)
-        # print('now theta is: ' + str(theta))
+        print('now theta is: ' + str(theta))
     joint_vars.append(temp)
 
 print(temp)
 
-# Close all open connections (just in case)
-vrep.simxFinish(-1)
-# Connect to V-REP (raise exception on failure)
-clientID = vrep.simxStart('127.0.0.1', 19997, True, True, 5000, 5)
-if clientID == -1:
-    raise Exception('Failed connecting to remote API server')
-# Start simulation
-vrep.simxStartSimulation(clientID, vrep.simx_opmode_oneshot)
+# # Close all open connections (just in case)
+# vrep.simxFinish(-1)
+# # Connect to V-REP (raise exception on failure)
+# clientID = vrep.simxStart('127.0.0.1', 19997, True, True, 5000, 5)
+# if clientID == -1:
+#     raise Exception('Failed connecting to remote API server')
+# # Start simulation
+# vrep.simxStartSimulation(clientID, vrep.simx_opmode_oneshot)
 
-res,goalFrame = vrep.simxGetObjectHandle(clientID, 'goalFrame', vrep.simx_opmode_blocking)
-jointHands = getJoiHands(clientID,'Jaco')
-res,jacoFrame = vrep.simxGetObjectHandle(clientID, "Jaco",vrep.simx_opmode_blocking)
-
-
+# res,goalFrame = vrep.simxGetObjectHandle(clientID, 'goalFrame', vrep.simx_opmode_blocking)
+# jointHands = getJoiHands(clientID,'Jaco')
+# res,jacoFrame = vrep.simxGetObjectHandle(clientID, "Jaco",vrep.simx_opmode_blocking)
 
 
-for config in temp:
-    # Check IK with dummy frame position
-    # goalT = jk.jaco_FK(config)
-    # # Set goal frame dummy to estimated location
-    # setObjPose(clientID, goalFrame, jacoFrame, goalT)
-    # Move arm to estimated location
-    joi1_o = getJoiPos(clientID,jointHands[0])
-    joi2_o = getJoiPos(clientID,jointHands[1])
-    joi3_o = getJoiPos(clientID,jointHands[2])
-    joi4_o = getJoiPos(clientID,jointHands[3])
-    joi5_o = getJoiPos(clientID,jointHands[4])
-    joi6_o = getJoiPos(clientID,jointHands[5])
-    joiPos_o = np.array([joi1_o,joi2_o,joi3_o,joi4_o,joi5_o,joi6_o])
 
-    for i in range(0, 6):
-        setJoiTargPos(clientID,jointHands[i],config[i] + joiPos_o[i])
-        print("Joint " + str(i+1) + " Moved by " + str(rad2deg(config[i])) + " Degrees")
-        time.sleep(0.5)
+
+# for config in temp:
+#     # Check IK with dummy frame position
+#     # goalT = jk.jaco_FK(config)
+#     # # Set goal frame dummy to estimated location
+#     # setObjPose(clientID, goalFrame, jacoFrame, goalT)
+#     # Move arm to estimated location
+#     joi1_o = getJoiPos(clientID,jointHands[0])
+#     joi2_o = getJoiPos(clientID,jointHands[1])
+#     joi3_o = getJoiPos(clientID,jointHands[2])
+#     joi4_o = getJoiPos(clientID,jointHands[3])
+#     joi5_o = getJoiPos(clientID,jointHands[4])
+#     joi6_o = getJoiPos(clientID,jointHands[5])
+#     joiPos_o = np.array([joi1_o,joi2_o,joi3_o,joi4_o,joi5_o,joi6_o])
+
+#     for i in range(0, 6):
+#         setJoiTargPos(clientID,jointHands[i],config[i] + joiPos_o[i])
+#         print("Joint " + str(i+1) + " Moved by " + str(rad2deg(config[i])) + " Degrees")
+#         time.sleep(0.5)
     
 
-print('Finished motions. Sleeping for 5sec')
+# print('Finished motions. Sleeping for 5sec')
 
-time.sleep(5)
+# time.sleep(5)
 
-# Stop simulation
-vrep.simxStopSimulation(clientID, vrep.simx_opmode_oneshot)
-# Before closing the connection to V-REP, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
-vrep.simxGetPingTime(clientID)
-# Close the connection to V-REP
-vrep.simxFinish(clientID)
+# # Stop simulation
+# vrep.simxStopSimulation(clientID, vrep.simx_opmode_oneshot)
+# # Before closing the connection to V-REP, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
+# vrep.simxGetPingTime(clientID)
+# # Close the connection to V-REP
+# vrep.simxFinish(clientID)
