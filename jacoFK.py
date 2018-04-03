@@ -78,8 +78,6 @@ print('Error in Position: '+ str(np.linalg.norm(np.subtract(np.array(newPos),np.
 time.sleep(5)
 
 
-
-
 # Stop simulation
 vrep.simxStopSimulation(clientID, vrep.simx_opmode_oneshot)
 # Before closing the connection to V-REP, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):

@@ -58,3 +58,9 @@ def getJacoZeroPose():
 
 def getJacoZOffset():
     return +8.2370e-02
+
+def getJacoSpheres():
+
+    joiRadii = np.array([.05,.05,.05,.075,.035,.035,.035,.15,.1,.05])
+
+    return joiRadii
