@@ -132,3 +132,15 @@ For the demo, a Jaco robot with a ?marker/felt-tip pen tool and a screen are use
 Once the joint angles from the previous code are known, the forward-kinematics of the robot are used to drive the robot to each location in the correct sequence to draw the input onto the screen in V-REP.
 
 As the user has complete freedom over a large and varied input space, the program demonstrates true inverse kinematics functionality as the user input can accurately be converted into robot motion.
+
+## Demonstrating Collision Detection
+
+### Code Setup
+
+A common consideration in robotics is that of collision between robot joint arms during the motion of a robot. A solution to this problem comes through the application of bounding volumes attached to the robot's joint arms. By applying simple bounding volumes, such as spheres to the robot arms, then calculating the goal position of the joints and checking for collision between the arms, we can detect where collisions will occur, if any, and protect the robots in use.
+
+The method described above is applied in code by first taking the desired joint angles and then calculating the forward kinematics. From the forward kinematics, the pose of each joint on the robot can be calculated and from the positions of each joint arm and the locations and size of the bounding volume, possible collisions can be checked for by comparing the end position of each bounding volume and seeing if it comes within range of another bounding volume, if so, a potential collision has been detected.
+
+### V-REP Setup
+
+For the demo, a Jaco robot with spheres attached at the necessary reference points is places in an environment with spheres attached to make sure that collision with external objects doesnt occur. This scene is titled "JacoCD.ttt" and can be opened once V-REP is launced as per the instructions described above. Next, to achieve orientations and check for collision detection, the user should execute "python JacoCD.py" and enter in values for the 6 joint angles. If no collision is detected, the final pose of the robot will be displayed and the robot will move to the position accordingly. However, if a collision is detected, whether with the robot itself or with an external object, the user will be notified and the objects in collision will be displayed. For the purposes of visualization, the robot will still have its attempt to reach the input angles simulated in V-REP.
