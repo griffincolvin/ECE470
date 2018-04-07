@@ -64,9 +64,9 @@ plt.show()
 plt.close()
 
 #XYZ locations of the corner
-origin = np.atleast_2d([.5,.5,.1]).transpose()
-xend =   np.atleast_2d([.5,-.5,.1]).transpose()
-yend =   np.atleast_2d([.5,.5,.5]).transpose()
+origin = np.atleast_2d([.5,.4,.1]).transpose()
+xend =   np.atleast_2d([.5,-.4,.1]).transpose()
+yend =   np.atleast_2d([.5,.4,.5]).transpose()
 # # Shouldn't it be somewhere like this? if the wall is placed at the
 # current location in the .ttt file in the repo
 # origin = np.atleast_2d([.4,.5,0]).transpose()

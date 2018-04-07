@@ -32,13 +32,13 @@ def jaco_IK(endPose, theta_init = None):
 def jaco_move_theta(clientID, thetas, delay=0.1,p=False):
     thetas = np.reshape(thetas, (6,))
     jointHands = getJoiHands(clientID,'Jaco')
-    for i in range(0, 6):
+    for i in reversed(range(0, 6)):
             setJoiTargPos(clientID,jointHands[i],thetas[i] + np.pi)
         # if print:
         #     print("Joint " + str(i+1) + " Moved by " + str(rad2deg(thetas[i])) + " Degrees")
         # if delay > 0:
         #     time.sleep(delay)
-    time.sleep(0.05*np.linalg.norm(thetas))
+    time.sleep(0.02*np.linalg.norm(thetas))
 
 
 @static_vars(__old_thetas=None)
