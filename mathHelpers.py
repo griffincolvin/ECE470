@@ -2,7 +2,7 @@ import numpy as np
 from numpy.linalg import inv, norm
 from scipy.linalg import expm, logm
 import math
-__all__ = ['brack3' , 'brack6', 'rot2eul', 'eul2rot', 'revS', 'prismS', 'deg2rad', 'rad2deg', 'adjbrack', 'printEuls', 'printPos', 'findIK', 'evalT', 'toPose','checkColl']
+__all__ = ['brack3' , 'brack6', 'rot2eul', 'eul2rot', 'revS', 'prismS', 'deg2rad', 'rad2deg', 'adjbrack', 'printEuls', 'printPos', 'findIK', 'evalT', 'toPose']
 
 def brack3( inputVector) :
     a = inputVector[0]
@@ -157,8 +157,12 @@ def toPose(rot, pos):
     :param pos: A 3x1 Position Vector
     :returns: A 4x4 HTC matrix as a numpy array
     """
+    rot = np.reshape(rot, (3,3))
+    pos = np.reshape(pos, (3,1))
+
+    l = np.atleast_2d([0,0,0,1])
     return np.block([[ rot, pos  ],
-                     [ 0,0,0,1   ]])
+                     [ l         ]])
 
 def fromPose(T):
     """
@@ -271,28 +275,31 @@ def findIK(endT, S, M, theta=None, max_iter=100, max_err = 0.001, mu=0.05):
         theta = theta + thetadot
         max_iter -= 1
 
+        # If you wanna debug things
+        # print('V twist: ' + str(V))
+        # print('Iterations:' + str(max_iter))
+        # print('Theta: '+ str(theta))
+        # print('Err: ' + str(np.linalg.norm(V)))
     
     return (theta, np.linalg.norm(V))
 
-
-
-def checkColl(S,M,thetas,radii,spheres_o,spheres_st):
+    def checkColl(S,M,thetas,radii,spheres_o,spheres_st):
     """
     Checks for collisions at given thetas using a robot's S, M, joint radii, and starting joint positions
     """
-    def transform_pts(P, S, theta, M):
-        P.insert(0, np.atleast_2d([[0],[0],[0]]))
-        N = len(S)
-        T = toTs(S, theta)
-        ret = []
-        T.insert(0, np.identity(4))
-        T.insert(0, np.identity(4))
-        for i in range(len(T)):
-            temp = np.identity(4)
-            for t in T[:i+1]:
-                temp = temp.dot(t)
-            ret.append(temp.dot(np.vstack([ P[i] , [[1]]])))
-        return np.hstack(ret)[:3]
+        def transform_pts(P, S, theta, M):
+            P.insert(0, np.atleast_2d([[0],[0],[0]]))
+            N = len(S)
+            T = toTs(S, theta)
+            ret = []
+            T.insert(0, np.identity(4))
+            T.insert(0, np.identity(4))
+            for i in range(len(T)):
+                temp = np.identity(4)
+                for t in T[:i+1]:
+                    temp = temp.dot(t)
+                ret.append(temp.dot(np.vstack([ P[i] , [[1]]])))
+            return np.hstack(ret)[:3]
 
     # numSpheres = len(S) + 2 #Assumes end effector and base included
 
@@ -308,10 +315,3 @@ def checkColl(S,M,thetas,radii,spheres_o,spheres_st):
     print(ret)
 
     return ret
-            
-
-
-
-            
-             
-
