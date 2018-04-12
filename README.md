@@ -144,3 +144,13 @@ The method described above is applied in code by first taking the desired joint 
 ### V-REP Setup
 
 For the demo, a Jaco robot with spheres attached at the necessary reference points is places in an environment with spheres attached to make sure that collision with external objects doesnt occur. This scene is titled "JacoCD.ttt" and can be opened once V-REP is launced as per the instructions described above. Next, to achieve orientations and check for collision detection, the user should execute "python JacoCD.py" which will iteraterate joint angle inputs and will sort 10 that do not lead to collision, 10 that lead to internal collision, and 10 that lead to collision with external objects. If no collision is detected, the final pose of the robot will be displayed and the robot will move to the position accordingly. However, if a collision is detected, whether with the robot itself or with an external object, the user will be notified and the objects in collision will be displayed. For the purposes of visualization, the robot will still have its attempt to reach the input angles simulated in V-REP.
+
+## Demonstrating Path Planning
+
+### Code Setup
+
+The path planning code is found in the python script file entitled "jacoPath.py" which contains the code necessary for the detection of a possible collision in a desired path between a start and a desired joint variable status. It will let the user know if no path is present and it will also provide the user with a path between the start and goal joint variables if it was able to find a path.
+
+### V-REP Setup
+
+The user will need to open up the scene: "PATH_SCENE.ttt" and then execute the "jacoPath.py" file and enter in the required end joint variables and the code will automatically simulate a path traversal if one exists.
