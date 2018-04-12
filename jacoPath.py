@@ -1,7 +1,6 @@
 from ece470_lib import *
 import numpy as np
 from numpy.linalg import inv, norm
-
 import vrep
 import jacoKinematics as jk
 import time
@@ -10,26 +9,26 @@ from vrepHelpers import *
 from mathHelpers import *
 
 
-def multi_transform(pts, S, theta):
-    Ns = 0
-    Np = 0
-    if isinstance(S, np.ndarray):
-        Ns = S.shape[1]
-        S = np.hsplit(S, Ns)
-    else:
-        Ns = len(S)
-    theta = np.asarray(theta).flatten()
-    if isinstance(pts, np.ndarray):
-        Np = pts.shape[1]
-        pts = np.hsplit(pts, Np)
-    else:
-        Np = len(pts)
-    pts = [np.vstack([p, [[1]] ]) for p in pts]
-    T = [evalT(S[:n], theta[:n]) for n in range(1,Ns+1)]
-    while Ns < Np:
-        T.insert(0, np.identity(4))
-        Ns += 1
-    return np.hstack([t.dot(p) for t, p in zip(T, pts)])[:3]
+# def multi_transform(pts, S, theta):
+#     Ns = 0
+#     Np = 0
+#     if isinstance(S, np.ndarray):
+#         Ns = S.shape[1]
+#         S = np.hsplit(S, Ns)
+#     else:
+#         Ns = len(S)
+#     theta = np.asarray(theta).flatten()
+#     if isinstance(pts, np.ndarray):
+#         Np = pts.shape[1]
+#         pts = np.hsplit(pts, Np)
+#     else:
+#         Np = len(pts)
+#     pts = [np.vstack([p, [[1]] ]) for p in pts]
+#     T = [evalT(S[:n], theta[:n]) for n in range(1,Ns+1)]
+#     while Ns < Np:
+#         T.insert(0, np.identity(4))
+#         Ns += 1
+#     return np.hstack([t.dot(p) for t, p in zip(T, pts)])[:3]
 
 def collision_check(pts, radii, pts2, radii2, dprint=False):
     Np = 0
@@ -67,15 +66,21 @@ def collision_check_line(t_start, t_end, p_robot, r_robot, S, p_obstacle, r_obst
             return True
     return False
 
-S = np.array([[ 0,  0,  1], [ 0,  1,  0], [ 0,  0,  0], [ 0,  0,  0], [ 0,  0,  0], [ 1,  0, -4]])
-M = np.array([[ 1,  0,  0,  2], [ 0, -1,  0,  2], [ 0,  0, -1,  0], [ 0,  0,  0,  1]])
-p_robot = np.array([[0, 0, 0, 2, 2], [0, 2, 4, 4, 2], [0, 0, 0, 0, 0]])
-r_robot = np.array([[0.90, 0.90, 0.90, 0.90, 0.90]])
-p_obstacle = np.array([[-4.36, 2.37, 2.63, -4.27, 0.83, 0.81, 4.22, 0.88, 4.94, -2.64, 0.65,  2.56, 3.13, 4.06, 4.27], [4.03, -1.82, -3.67, 3.91, -4.07, -0.99, -0.27, -4.87, -4.75, -3.25,  -2.93, -1.40, -3.80, -1.15, 0.67], [3.90, 0.21, -4.81, -4.57, -4.71, 4.64, -0.96, -2.13, 3.73, 3.22, -4.92,  -2.06, 4.91, -2.97, 4.73]])
-r_obstacle = np.array([[1.52, 0.69, 1.92, 3.28, 2.26, 2.73, 2.19, 2.45, 4.14, 2.14, 3.68, 1.93,  2.01, 2.86, 1.47]])
-theta_start = np.array([[0.48], [0.23], [1.20]])
-theta_goal = np.array([[2.91], [-3.05], [-0.54]])
+print( 'Enter choice of 6 joint variables in degrees: ')
+thetas = [float(x) for x in input().split()]
+for i in range(0,6):
+    thetas[i] = deg2rad(thetas[i])
+    # Close all open connections (just in case)
+vrep.simxFinish(-1)
+# Connect to V-REP (raise exception on failure)
+clientID = vrep.simxStart('127.0.0.1', 19997, True, True, 5000, 5)
+if clientID == -1:
+    raise Exception('Failed connecting to remote API server')
 
+configs = []
+
+
+jointHands = getJoiHands(clientID,'Jaco')
 th1_o = getJoiPos(clientID,jointHands[0])
 th2_o = getJoiPos(clientID,jointHands[1])
 th3_o = getJoiPos(clientID,jointHands[2])
@@ -93,12 +98,30 @@ jacoRadii = getJacoSpheres() # r_robot & r_obstacles ????
 
 jointHands = getJoiHands(clientID,'Jaco') # r_robot ?
 
-print(thetas_o)
-print(jacoM)
-print(jacoRadii)
-print(jacoScrew)
-print(jacoHands)
+print("theta_start:     " + str(thetas_o))
+print("M:               " + str(jacoM))
+print("Radii:           " + str(jacoRadii))
+print("S:               " + str(jacoScrew))
+print("jointHands:      " + str(jointHands))
 ## Get theta goal from the user
+
+M = np.asarray(jacoM)
+S = np.asarray(jacoScrew)
+theta_goal = thetas
+
+# Im attempting to get the parameters that are used in the path planning code to work for our values that apply to the robot and obstacles that are in the scene: PATH_SCENE.ttt, 
+# these are the relevant numbers, but they need to work with the implementation below
+S = np.array([[0, 0, 0, 0, 0, 0] , [0, 1, -1, 0,  -0.819152044, -0.939692621] ,  [-1, 0, 0, -1, -0.573576436, 0.342020143],  [0, -0.19713, 0.60713, -0.0097827, 0.695811061, 0.876597577], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]])
+M = np.array([[ 1.0,  0.0,  0.0, -3.27920000e-05],[ 0.0,  3.42020143e-01, -9.39692621e-01,  1.17690000e-01],[ 0.0,  9.39692621e-01,  3.42020143e-01,  8.90020000e-01], [ 0.0,  0.0,  0.0, 1.0]])
+p_robot = np.array([[0, 0, 0, 0, 0, 0], [-0.0192, -0.0192, -0.0192, 0.0098, -0.0036, 0.1054], [0.3027, 0.4027, 0.5027, 0.6934, 0.8087, 0.8908]])
+r_robot = np.array([[0.05, 0.05, 0.05, 0.05, 0.05, 0.05]])
+p_obstacle = np.array([[0, -0.375, -0.375, 0], [0, -0.3, -0.325, -0.325], [0.1589, 0.400,  0.85, 0.550]])
+r_obstacle = np.array([[0.075, 0.05, 0.05, 0.05]])
+theta_start = np.array([[np.pi], [np.pi], [np.pi], [np.pi], [np.pi], [np.pi]])
+
+# the theta goal can me modified, i just used this for testing.
+theta_goal = np.array([[np.pi + 0.5], [np.pi + 0.5], [np.pi+0.5], [np.pi+0.5], [np.pi+0.5], [np.pi+0.5]])
+
 
 
 ts = Tree(theta_start)
@@ -143,5 +166,42 @@ while app is not None:
     ret.append(app)
     app = te.parent(app)
 ret.append(theta_goal)
+
 print(np.hstack(ret))
 ts.getElements()
+
+
+
+# Dummy4 = [0  -0.0192 0.3027] 
+# r4 = 0.05
+# Dummy = [0  -0.0192 0.4027]
+# r = 0.05
+# Dummy3 = [0  -0.0192 0.5027]
+# r3 = 0.05
+# Dummy5 = [0  0.0098 0.6934]
+# r5 = 0.05
+# Dummy6 = [0  -0.0036 0.8087]
+# r6 = 0.05
+# Dummy2 = [0  0.1054 0.8908]
+# r2 = 0.05
+
+# Dummy1 = [0  0.00 0.1589] 
+# r1 = 0.075
+# Dummy8 = [-0.375 -0.300 0.400] 
+# r8 = 0.05
+# Dummy7 = [0.3750 -0.3250 0.85] 
+# r7 = 0.05
+# Dummy0 = [0 -0.3250 0.550]
+# r0 = 0.05
+
+
+# res,dummy = vrep.simxGetObjectHandle(clientID,'Dummy',vrep.simx_opmode_blocking)
+# res,dummy0 = vrep.simxGetObjectHandle(clientID,'Dummy0',vrep.simx_opmode_blocking)
+# res,dummy1 = vrep.simxGetObjectHandle(clientID,'Dummy1',vrep.simx_opmode_blocking)
+# res,dummy2 = vrep.simxGetObjectHandle(clientID,'Dummy2',vrep.simx_opmode_blocking)
+# res,dummy3 = vrep.simxGetObjectHandle(clientID,'Dummy3',vrep.simx_opmode_blocking)
+# res,dummy4 = vrep.simxGetObjectHandle(clientID,'Dummy4',vrep.simx_opmode_blocking)
+# res,dummy5 = vrep.simxGetObjectHandle(clientID,'Dummy5',vrep.simx_opmode_blocking)
+# res,dummy6 = vrep.simxGetObjectHandle(clientID,'Dummy6',vrep.simx_opmode_blocking)
+# res,dummy7 = vrep.simxGetObjectHandle(clientID,'Dummy7',vrep.simx_opmode_blocking)
+# res,dummy8 = vrep.simxGetObjectHandle(clientID,'Dummy8',vrep.simx_opmode_blocking)
