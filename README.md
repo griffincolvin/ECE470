@@ -23,9 +23,18 @@
 
 ### __3. Applying inverse kinematics using V-REP__
 
-    3a. Determining DH parameters
-    3b.
----
+    3a.
+### __4. Collision Avoidance using V-REP__
+
+    4a. Code Setup
+    4b. V-REP Setup
+
+### __5. Path Planning using V-REP__
+
+    4a. Code Setup
+    4b. V-REP Setup
+
+<hr>
 
 ## Starting off using V-REP with Python API
 
@@ -111,7 +120,6 @@ __Kinova Robotics :__
 
 ### __2a. Determining physical parameters__
 
----
 
 ## Applying inverse kinematics using V-REP
 
@@ -149,8 +157,8 @@ For the demo, a Jaco robot with spheres attached at the necessary reference poin
 
 ### Code Setup
 
-The path planning code is found in the python script file entitled "jacoPath.py" which contains the code necessary for the detection of a possible collision in a desired path between a start and a desired joint variable status. It will let the user know if no path is present and it will also provide the user with a path between the start and goal joint variables if it was able to find a path.
+The next step after collision avoidance is to implement an algorithm to effectively plan a series of joint angles to set the Jaco arm end effector's pose at a desired location without hitting any obstacles. The resulting code incorporates tree structures to effectively insert and alter desired joint angles after it evaluates if there would be a collision or not. These joint angles are tested against both trees, Tstart and Tend, and then are appended if valid. It then repeats in order to find the next valid set of thetas. Once a complete path is found through the trees, the simulation begins and allows the robot to navigate by iterating through the set joint angles.
 
 ### V-REP Setup
 
-The user will need to open up the scene: "PATH_SCENE.ttt" and then execute the "jacoPath.py" file and enter in the required end joint variables and the code will automatically simulate a path traversal if one exists.
+The V-REP adjustments made were minimal in regards to the previous collison avoidance application. The same spheres are applied to the body of the Jaco arm, but the floating obstacles were altered in order to demonstrate the path planning feature with more ease.
