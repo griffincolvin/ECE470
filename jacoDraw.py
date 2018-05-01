@@ -60,15 +60,16 @@ class Cursor(object):
 
 def get_input(origin = [.5, .4, .1], x_end = [.5, -0.4, .1] , y_dir = [.5, .4, .5], DEBUG = False, max_dist = 0.01):
     fig, ax = plt.subplots()
+    ax.set_aspect(1)
     cursor = Cursor(ax)
     plt.axis([0, 1, 0, 1])
     plt.show()
     plt.close()
 
     #XYZ locations of the corner
-    origin = np.atleast_2d([.5,.4,.1]).transpose()
-    xend =   np.atleast_2d([.5,-.4,.1]).transpose()
-    yend =   np.atleast_2d([.5,.4,.5]).transpose()
+    origin = np.atleast_2d(origin).reshape((3,1))
+    xend =   np.atleast_2d(x_end).reshape((3,1))
+    yend =   np.atleast_2d(y_dir).reshape((3,1))
     # # Shouldn't it be somewhere like this? if the wall is placed at the
     # current location in the .ttt file in the repo
     # origin = np.atleast_2d([.4,.5,0]).transpose()
@@ -125,4 +126,46 @@ def dist_linspace(m1, m2, max_dist):
 
 if __name__ == "__main__":
 
-    print(get_input())
+    # print(thetas)
+    vrep.simxFinish(-1)
+    # Connect to V-REP (raise exception on failure)
+    clientID = vrep.simxStart('127.0.0.1', 19997, True, True, 5000, 5)
+    if clientID == -1:
+        raise Exception('Failed connecting to remote API server')
+    # Start simulation
+    vrep.simxStartSimulation(clientID, vrep.simx_opmode_oneshot)
+
+    res,goalFrame = vrep.simxGetObjectHandle(clientID, 'goalFrame', vrep.simx_opmode_blocking)
+    jointHands = getJoiHands(clientID,'Jaco')
+    res,jacoFrame = vrep.simxGetObjectHandle(clientID, "Jaco",vrep.simx_opmode_blocking)
+
+    en_drawing = np.array([[0,0,0,0.1],[0,0,0,0],[0,0,0,0],[0,0,0,0]])
+
+    poses = get_input()
+
+    for line in poses:
+        first = line[0]
+        setObjPose(clientID, goalFrame, jacoFrame, first)
+        jk.jaco_move_pose(clientID, first, delay=0)
+        time.sleep(2)
+        for T in line:
+            # Set goal frame dummy to estimated location
+            setObjPose(clientID, goalFrame, jacoFrame, T + en_drawing)
+            jk.jaco_move_pose(clientID, T + en_drawing, delay=0)
+        last = line[-1]
+        setObjPose(clientID, goalFrame, jacoFrame, last)
+        jk.jaco_move_pose(clientID, last, delay=0)
+        time.sleep(1)
+
+
+
+    print('Finished motions. Sleeping for 5sec')
+
+    time.sleep(5)
+
+    # Stop simulation
+    vrep.simxStopSimulation(clientID, vrep.simx_opmode_oneshot)
+    # Before closing the connection to V-REP, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
+    vrep.simxGetPingTime(clientID)
+    # Close the connection to V-REP
+    vrep.simxFinish(clientID)
