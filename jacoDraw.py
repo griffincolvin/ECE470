@@ -6,7 +6,7 @@ import vrep
 import time
 from vrepHelpers import *
 from mathHelpers import *
-
+from ece470_lib import *
 
 class Cursor(object):
     def __init__(self, ax):
@@ -57,89 +57,72 @@ class Cursor(object):
         plt.connect('button_press_event', self.button_press)
         plt.connect('button_release_event', self.button_release)
 
-fig, ax = plt.subplots()
-cursor = Cursor(ax)
-plt.axis([0, 1, 0, 1])
-plt.show()
-plt.close()
 
-#XYZ locations of the corner
-origin = np.atleast_2d([.5,.4,.1]).transpose()
-xend =   np.atleast_2d([.5,-.4,.1]).transpose()
-yend =   np.atleast_2d([.5,.4,.5]).transpose()
-# # Shouldn't it be somewhere like this? if the wall is placed at the
-# current location in the .ttt file in the repo
-# origin = np.atleast_2d([.4,.5,0]).transpose()
-# xend =   np.atleast_2d([.4,-.5,0]).transpose()
-# yend =   np.atleast_2d([.4,.5,1]).transpose()
+def get_input(origin = [.5, .4, .1], x_end = [.5, -0.4, .1] , y_dir = [.5, .4, .5], DEBUG = False, max_dist = 0.01):
+    fig, ax = plt.subplots()
+    cursor = Cursor(ax)
+    plt.axis([0, 1, 0, 1])
+    plt.show()
+    plt.close()
 
-xvec = xend - origin;
-yvec = yend - origin;
+    #XYZ locations of the corner
+    origin = np.atleast_2d([.5,.4,.1]).transpose()
+    xend =   np.atleast_2d([.5,-.4,.1]).transpose()
+    yend =   np.atleast_2d([.5,.4,.5]).transpose()
+    # # Shouldn't it be somewhere like this? if the wall is placed at the
+    # current location in the .ttt file in the repo
+    # origin = np.atleast_2d([.4,.5,0]).transpose()
+    # xend =   np.atleast_2d([.4,-.5,0]).transpose()
+    # yend =   np.atleast_2d([.4,.5,1]).transpose()
 
-pts = [ [x*xvec + y*yvec + origin for x, y in zip(xs, ys)] for xs, ys in zip(cursor.xpts, cursor.ypts)]
+    xvec = xend - origin
+    yvec = yend - origin
+    yvec =(np.linalg.norm(xvec))*yvec/np.linalg.norm(yvec)
 
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+    pts = [ [x*xvec + y*yvec + origin for x, y in zip(xs, ys)] for xs, ys in zip(cursor.xpts, cursor.ypts)]
 
-for l in pts:
-    l = np.hstack(l)
-    x = l[0,:]
-    y = l[1,:]
-    z = l[2,:]
-    ax.plot(x,y,z)
-    
-# plt.show()
+    pts2 = []
+    for line in pts:
+        tpts = []
+        for r_start, r_end in zip(line[:-1], line[1:]):
+            tpts = tpts + dist_linspace(r_start, r_end, max_dist)
+        pts2.append(tpts)
 
-plane_norm = np.cross(xvec.T, yvec.T).T
-plane_norm = plane_norm/np.linalg.norm(plane_norm)
-y_rot = np.atleast_2d([[0],[0],[1]])
-x_rot = np.cross(y_rot.T, plane_norm.T).T
-rot = np.hstack([x_rot, y_rot, plane_norm])
+    pts = pts2
 
-poses = [ [toPose(rot, point) for point in line] for line in pts]
+    if DEBUG:
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+        for l in pts:
+            l = np.hstack(l)
+            x = l[0,:]
+            y = l[1,:]
+            z = l[2,:]
+            ax.plot(x,y,z)
+        plt.show()
+
+    plane_norm = np.cross(xvec.T, yvec.T).T
+    plane_norm = plane_norm/np.linalg.norm(plane_norm)
+    y_rot = np.atleast_2d([[0],[0],[1]])
+    x_rot = np.cross(y_rot.T, plane_norm.T).T
+    rot = np.hstack([x_rot, y_rot, plane_norm])
+
+    poses = []
+    for line in pts:
+        tp= []
+        for pos in line:
+            tp.append(toPose(rot, pos))
+        poses.append(tp)
+
+    if DEBUG:
+        print(poses)
+    return poses
 
 
+def dist_linspace(m1, m2, max_dist):
+    dist = np.linalg.norm(m1 - m2)
+    return matrix_linspace(m1, m2,int(dist/max_dist) + 1)
 
 if __name__ == "__main__":
- 
-    # print(thetas)
-    vrep.simxFinish(-1)
-    # Connect to V-REP (raise exception on failure)
-    clientID = vrep.simxStart('127.0.0.1', 19997, True, True, 5000, 5)
-    if clientID == -1:
-        raise Exception('Failed connecting to remote API server')
-    # Start simulation
-    vrep.simxStartSimulation(clientID, vrep.simx_opmode_oneshot)
 
-    res,goalFrame = vrep.simxGetObjectHandle(clientID, 'goalFrame', vrep.simx_opmode_blocking)
-    jointHands = getJoiHands(clientID,'Jaco')
-    res,jacoFrame = vrep.simxGetObjectHandle(clientID, "Jaco",vrep.simx_opmode_blocking)
-
-    en_drawing = np.array([[0,0,0,0.1],[0,0,0,0],[0,0,0,0],[0,0,0,0]])
-
-    for line in poses:
-        first = line[0]
-        setObjPose(clientID, goalFrame, jacoFrame, first)
-        jk.jaco_move_pose(clientID, first, delay=0)
-        time.sleep(2)
-        for T in line:
-            # Set goal frame dummy to estimated location
-            setObjPose(clientID, goalFrame, jacoFrame, T + en_drawing)
-            jk.jaco_move_pose(clientID, T + en_drawing, delay=0)
-        last = line[-1]
-        setObjPose(clientID, goalFrame, jacoFrame, last)
-        jk.jaco_move_pose(clientID, last, delay=0)
-        time.sleep(1)
-
-
-
-    print('Finished motions. Sleeping for 5sec')
-
-    time.sleep(5)
-
-    # Stop simulation
-    vrep.simxStopSimulation(clientID, vrep.simx_opmode_oneshot)
-    # Before closing the connection to V-REP, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
-    vrep.simxGetPingTime(clientID)
-    # Close the connection to V-REP
-    vrep.simxFinish(clientID)
+    print(get_input())
