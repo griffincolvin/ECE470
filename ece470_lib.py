@@ -128,7 +128,7 @@ def toPose(rot, pos):
     :returns: A 4x4 HTC matrix as a numpy array
     """
     return np.block([[ rot, pos  ],
-                     [ [0,0,0,1] ]])
+                     [ np.array([0,0,0,1]) ]])
 
 def fromPose(T):
     """

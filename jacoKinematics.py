@@ -42,23 +42,28 @@ def jaco_move_theta(clientID, thetas, delay=0.1,p=False):
     time.sleep(delay)
 
 
-@static_vars(__old_thetas=np.zeros(6,1))
+@static_vars(__old_thetas=np.zeros((6,1)))
 def jaco_move_pose(clientID, Pose, delay=0.0,p=False):
     thetas = jaco_IK(Pose, theta_init=jaco_move_pose.__old_thetas)
     if thetas is None:
+        print("bad thetas")
         return False
-    delay2 = __old_thetas - thetas
-    delay2 = np.norm(delay) * 0.02
+    delay2 = jaco_move_pose.__old_thetas - thetas
+    delay2 = np.linalg.norm(delay) * 0.00002
     jaco_move_pose.__old_thetas = thetas
     jaco_move_theta(clientID, thetas, delay=delay2)
     return True
 
-@static_vars(__old_pose = np.identity(4))
-def jaco_move_pose_interplote(clientID, new_pose, spacing=0.1, delay=0):
-    dist = np.linalg.norm(fromPose(__old_pose)[1] - fromPose(new_pose))
-    for int_pose in matrix_linspace(__old_pose, new_pose,1+int(dist/spacing) ,to_end=True):
-        if not jaco_move_pose(clientID, int_pose, delay=delay):
-            __old_pose = int_pose
+@static_vars(__old_pose = None)
+def jaco_move_pose_interplote(clientID, new_pose, spacing=0.01):
+    if jaco_move_pose_interplote.__old_pose is None:
+        jaco_move_pose_interplote.__old_pose = new_pose
+        return jaco_move_pose(clientID, new_pose)
+
+    dist = np.linalg.norm(fromPose(jaco_move_pose_interplote.__old_pose)[1] - fromPose(new_pose)[1])
+    for int_pose in matrix_linspace(jaco_move_pose_interplote.__old_pose, new_pose, 1+int(dist/spacing), to_end=True):
+        if not jaco_move_pose(clientID, int_pose):
+            jaco_move_pose_interplote.__old_pose = int_pose
             return False
-    __old_pose = new_pose
+    jaco_move_pose_interplote.__old_pose = new_pose
     return True

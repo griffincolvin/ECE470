@@ -59,7 +59,8 @@ class Cursor(object):
 
 
 def get_input(origin = [.5, .4, .1], x_end = [.5, -0.4, .1] , y_dir = [.5, .4, .5], DEBUG = False, max_dist = 0.01):
-    fig, ax = plt.subplots()
+    fig = plt.figure(figsize=(4,4))
+    ax = fig.add_subplot(111)    
     ax.set_aspect(1)
     cursor = Cursor(ax)
     plt.axis([0, 1, 0, 1])
@@ -146,15 +147,15 @@ if __name__ == "__main__":
     for line in poses:
         first = line[0]
         setObjPose(clientID, goalFrame, jacoFrame, first)
-        jk.jaco_move_pose(clientID, first, delay=0)
+        jk.jaco_move_pose_interplote(clientID, first, spacing=1)
         time.sleep(2)
         for T in line:
             # Set goal frame dummy to estimated location
             setObjPose(clientID, goalFrame, jacoFrame, T + en_drawing)
-            jk.jaco_move_pose(clientID, T + en_drawing, delay=0)
+            jk.jaco_move_pose_interplote(clientID, T + en_drawing)
         last = line[-1]
         setObjPose(clientID, goalFrame, jacoFrame, last)
-        jk.jaco_move_pose(clientID, last, delay=0)
+        jk.jaco_move_pose_interplote(clientID, last)
         time.sleep(1)
 
 

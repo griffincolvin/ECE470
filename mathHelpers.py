@@ -284,9 +284,6 @@ def findIK(endT, S, M, theta=None, max_iter=100, max_err = 0.001, mu=0.05):
     return (theta, np.linalg.norm(V))
 
     def checkColl(S,M,thetas,radii,spheres_o,spheres_st):
-    """
-    Checks for collisions at given thetas using a robot's S, M, joint radii, and starting joint positions
-    """
         def transform_pts(P, S, theta, M):
             P.insert(0, np.atleast_2d([[0],[0],[0]]))
             N = len(S)
