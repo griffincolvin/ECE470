@@ -131,10 +131,10 @@ if __name__ == '__main__':
     S = np.hstack(JacoScrewMatrix())
     # jacoM = getJacoZeroPose()
 
-    p_robot = np.array([[0, 0, 0, 0, 0, 0], [-0.0192, -0.0192, -0.0192, 0.0098, -0.0036, 0.1054], [0.3027, 0.4027, 0.5027, 0.6934, 0.8087, 0.8908]])
-    r_robot = np.array([[0.05, 0.05, 0.05, 0.05, 0.05, 0.05]])
-    p_obstacle = np.array([[0, -0.375, -0.375, 0], [0, -0.3, -0.325, -0.325], [0.1589, 0.400,  0.85, 0.550]])
-    r_obstacle = np.array([[0.075, 0.05, 0.05, 0.05]])
+    p_robot = np.array([[0, 0, 0, 0, 0, 0], [-0.0192, -0.0192, -0.0192, 0.0098, -0.0036, 0.1054], [0.3027, 0.4027, 0.5027, 0.6934, 0.8087, 0.8908]]) # this should be a 3x8 (two stationary, 1 per joint)
+    r_robot = np.array([[0.05, 0.05, 0.05, 0.05, 0.05, 0.05]])                                                                                       # this should be a 1x8 
+    p_obstacle = np.array([[0, -0.375, -0.375, 0], [0, -0.3, -0.325, -0.325], [0.1589, 0.400,  0.85, 0.550]])                                        # should be a 3x3 (only 3 spheres in PATH_SCENE)
+    r_obstacle = np.array([[0.075, 0.05, 0.05, 0.05]])                                                                                               # should be a 3x1
 
     t_goal, err = input_thetas()
     while not err:
