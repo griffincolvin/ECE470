@@ -67,3 +67,10 @@ def jaco_move_pose_interplote(clientID, new_pose, spacing=0.01):
             return False
     jaco_move_pose_interplote.__old_pose = new_pose
     return True
+
+@static_vars(__old_thetas=np.zeros((6,1)))
+def jaco_move_theta_interpolate(clientID, new_theta, num=40):
+    new_theta = np.reshape(new_theta, (6,1))
+    for int_theta in matrix_linspace(jaco_move_theta_interpolate.__old_thetas, new_theta, num, to_end=True):
+        jaco_move_theta(clientID, int_theta, delay=0.0)
+    jaco_move_theta_interpolate.__old_thetas = new_theta
