@@ -4,7 +4,7 @@
 
 ## Table of Contents
 
-### __1. Starting off using V-REP with Python API__
+### __1. Starting off using V-REP with the Python API__
 
     1a. Installation of necessary software
     1b. Connecting to V-REP through Python remote API
@@ -12,31 +12,28 @@
     1d. Develop and run the main script
     1e. Refining script based on the simulation
     1f. References
+### __2. Applying Forward Kinematics Using V-REP__
 
-### __2. Applying forward kinematics using V-REP__
-
-    2a. Determining physical parameters
-    2b. Initializing coordinate transformation matrix
-    2c. Intitializing screw axes
-    2d. Calculating homogeneous transformation matrix
-    2e. Implentating forward kinematic function
-
-### __3. Applying inverse kinematics using V-REP__
-
-    3a.
-### __4. Collision Avoidance using V-REP__
+    2a. Code Setup
+    2b. V-REP Setup
+### __3. Applying Inverse Kinematics Using V-REP__
+    
+    3a. Code Setup
+    3b. V-REP Setup
+### __4. Collision Avoidance Using V-REP__
 
     4a. Code Setup
     4b. V-REP Setup
 
-### __5. Path Planning using V-REP__
+### __5. Path Planning Using V-REP__
 
-    4a. Code Setup
-    4b. V-REP Setup
+    5a. Code Setup
+    5b. V-REP Setup
+### __6. References__
 
 <hr>
 
-## Starting off using V-REP with Python API
+## Starting Off Using V-REP with the Python API
 
 ### __1a. Installation of necessary software__
 
@@ -103,25 +100,15 @@ From within the newly created folder from before, run `python jacoPaint_JDN.py` 
 
 This simple simulation using the Jaco robot arm is a great demonstration of how quickly V-REP can be picked up and put to use. The supporting video for this section can be found at <https://www.youtube.com/watch?v=IwFgBY0sgR0> and was recorded using V-REP's simple in-house screen recorder. This can be easily found within the left sidebar of the GUI.
 
-### __1f. References__
-
-__Python V-REP Remote API Cheatsheet :__
-<http://www.coppeliarobotics.com/helpFiles/en/remoteApiFunctionsPython.htm>
-
-__Anaconda Cheatsheet :__
-<https://conda.io/docs/_downloads/conda-cheatsheet.pdf>
-
-__Kinova Robotics :__
-<http://www.kinovarobotics.com>
-
 ---
 
-## Applying forward kinematics using V-REP
+## Applying Forward Kinematics Using V-REP
 
-### __2a. Determining physical parameters__
+### Code Setup
 
+### V-REP Setup
 
-## Applying inverse kinematics using V-REP
+## Applying Inverse Kinematics Using V-REP
 
 ### Code Setup
 
@@ -141,7 +128,7 @@ Once the joint angles from the previous code are known, the forward-kinematics o
 
 As the user has complete freedom over a large and varied input space, the program demonstrates true inverse kinematics functionality as the user input can accurately be converted into robot motion.
 
-## Demonstrating Collision Detection
+## Demonstrating Collision Detection Using V-REP
 
 ### Code Setup
 
@@ -162,3 +149,14 @@ The next step after collision avoidance is to implement an algorithm to effectiv
 ### V-REP Setup
 
 The V-REP adjustments made were minimal in regards to the previous collison avoidance application. The same spheres are applied to the body of the Jaco arm, but the floating obstacles were altered in order to demonstrate the path planning feature with more ease.
+
+## References
+
+__Python V-REP Remote API Cheatsheet :__
+<http://www.coppeliarobotics.com/helpFiles/en/remoteApiFunctionsPython.htm>
+
+__Anaconda Cheatsheet :__
+<https://conda.io/docs/_downloads/conda-cheatsheet.pdf>
+
+__Kinova Robotics :__
+<http://www.kinovarobotics.com>
